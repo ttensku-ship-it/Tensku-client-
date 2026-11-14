@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "tenskuclient",
+  "version": "${version}",
+  "name": "Tensku Client",
+  "description": "Balance tracker HUD with live graph, big-payment alerts and a clean settings screen.",
+  "authors": ["tensku"],
+  "environment": "client",
+  "entrypoints": { "client": ["dev.tensku.client.TenskuClient"] },
+  "depends": { "fabricloader": ">=0.18.0", "minecraft": "~26.3", "java": ">=25", "fabric-api": "*" }
+}
