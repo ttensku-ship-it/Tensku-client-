@@ -15,7 +15,7 @@ public class BalanceHud {
         Config c = Config.I;
         if (!c.showHud) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.hideGui && mc.gui.screen() == null) return;
+       
         drawPanel(g, mc.font, c.hudX, c.hudY, c.hudScalePct / 100f);
         drawPayBanner(g, mc);
         AuctionWin.render(g, mc);
