@@ -7,5 +7,5 @@
   "authors": ["tensku"],
   "environment": "client",
   "entrypoints": { "client": ["dev.tensku.client.TenskuClient"] },
-  "depends": { "fabricloader": ">=0.18.0", "minecraft": "~26.3", "java": ">=25", "fabric-api": "*" }
+  "depends": { "fabricloader": ">=0.19.3", "minecraft": "~26.3", "java": ">=25", "fabric-api": "*" }
 }

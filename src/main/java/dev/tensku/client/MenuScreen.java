@@ -1,6 +1,6 @@
 package dev.tensku.client;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -72,30 +72,30 @@ public class MenuScreen extends Screen {
     private void rebuild() { clearWidgets(); init(); }
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         Theme t = Theme.current();
         g.fill(0, 0, width, height, 0x90000000);
         g.fill(px - 1, py - 1, px + PW + 1, py + PH + 1, t.accent());
         g.fill(px, py, px + PW, py + PH, t.panel());
         g.fill(px, py, px + PW, py + 24, t.bg());
-        g.drawString(font, "TENSKU // CLIENT", px + 8, py + 8, t.accent(), false);
+        g.text(font, "TENSKU // CLIENT", px + 8, py + 8, t.accent(), false);
         g.fill(px + 104, py + 30, px + 105, py + PH - 20, t.bg());
-        g.drawString(font, "ESC - close", px + 8, py + PH - 14, t.dim(), false);
+        g.text(font, "ESC - close", px + 8, py + PH - 14, t.dim(), false);
         String by = "by tensku";
-        g.drawString(font, by, px + PW - 8 - font.width(by), py + PH - 14, t.dim(), false);
-        super.render(g, mx, my, delta);
+        g.text(font, by, px + PW - 8 - font.width(by), py + PH - 14, t.dim(), false);
+        super.extractRenderState(g, mx, my, delta);
         if (tab == 1) renderAuctionLog(g, t);
         // live preview of the HUD under the menu
         BalanceHud.drawPanel(g, font, px + PW + 10 < width - BalanceHud.W ? px + PW + 10 : 4, py, 1f);
     }
 
-    private void renderAuctionLog(GuiGraphics g, Theme t) {
+    private void renderAuctionLog(GuiGraphicsExtractor g, Theme t) {
         int x = px + 112, y = py + 112;
         String head = "Sold $" + Money.fmt(AuctionLog.totalSold) + "   Bought $" + Money.fmt(AuctionLog.totalBought)
             + "   Profit " + Money.fmtSigned(AuctionLog.profit());
-        g.drawString(font, head, x, y, AuctionLog.profit() >= 0 ? t.up() : t.down(), false);
+        g.text(font, head, x, y, AuctionLog.profit() >= 0 ? t.up() : t.down(), false);
         if (AuctionLog.ENTRIES.isEmpty()) {
-            g.drawString(font, "No auction activity yet.", x, y + 14, t.dim(), false);
+            g.text(font, "No auction activity yet.", x, y + 14, t.dim(), false);
             return;
         }
         int n = Math.min(5, AuctionLog.ENTRIES.size());
@@ -103,8 +103,8 @@ public class MenuScreen extends Screen {
             var e = AuctionLog.ENTRIES.get(i);
             String item = e.item().length() > 22 ? e.item().substring(0, 21) + "." : e.item();
             String amt = (e.sold() ? "+$" : "-$") + Money.fmt(e.amount());
-            g.drawString(font, (e.sold() ? "SOLD " : "BUY  ") + item, x, y + 14 + i * 11, t.text(), false);
-            g.drawString(font, amt, px + PW - 12 - font.width(amt), y + 14 + i * 11, e.sold() ? t.up() : t.down(), false);
+            g.text(font, (e.sold() ? "SOLD " : "BUY  ") + item, x, y + 14 + i * 11, t.text(), false);
+            g.text(font, amt, px + PW - 12 - font.width(amt), y + 14 + i * 11, e.sold() ? t.up() : t.down(), false);
         }
     }
 

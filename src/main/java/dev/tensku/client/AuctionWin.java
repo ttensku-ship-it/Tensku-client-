@@ -2,7 +2,7 @@ package dev.tensku.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class AuctionWin {
 
     public static void test() { trigger("Netherite Sword", 4_250_000); }
 
-    public static void render(GuiGraphics g, Minecraft mc) {
+    public static void render(GuiGraphicsExtractor g, Minecraft mc) {
         if (startedAt == 0) return;
         long now = System.currentTimeMillis();
         long age = now - startedAt;
@@ -92,15 +92,15 @@ public class AuctionWin {
             }
         }
 
-        g.drawString(f, "AUCTION SOLD", x + 10, y + 8, 0xFFFFD34D, false);
+        g.text(f, "AUCTION SOLD", x + 10, y + 8, 0xFFFFD34D, false);
         String it = item.length() > 26 ? item.substring(0, 25) + "." : item;
-        g.drawString(f, it, x + bw - 10 - f.width(it), y + 8, t.text(), false);
+        g.text(f, it, x + bw - 10 - f.width(it), y + 8, t.text(), false);
         double count = amount * (1 - Math.pow(1 - Math.min(1, age / 1300.0), 3));
         String amt = "+$" + Money.fmt(count);
-        g.drawString(f, amt, x + 10, y + 26, t.up(), false);
+        g.text(f, amt, x + 10, y + 26, t.up(), false);
         double total = AuctionLog.totalSold;
         String tot = "session $" + Money.fmt(total);
-        g.drawString(f, tot, x + bw - 10 - f.width(tot), y + 26, t.dim(), false);
+        g.text(f, tot, x + bw - 10 - f.width(tot), y + 26, t.dim(), false);
 
         // 3) confetti
         for (Particle p : PARTICLES) {

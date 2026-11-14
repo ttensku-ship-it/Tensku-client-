@@ -2,7 +2,7 @@ package dev.tensku.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.List;
 
@@ -11,18 +11,18 @@ public class BalanceHud {
 
     public static int height() { return Config.I.showGraph ? 104 : 46; }
 
-    public static void render(GuiGraphics g) {
+    public static void render(GuiGraphicsExtractor g) {
         Config c = Config.I;
         if (!c.showHud) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.hideGui && mc.screen == null) return;
+        if (mc.options.hideGui && mc.gui.screen() == null) return;
         drawPanel(g, mc.font, c.hudX, c.hudY, c.hudScalePct / 100f);
         drawPayBanner(g, mc);
         AuctionWin.render(g, mc);
     }
 
     /** Draws the panel at x,y. Uses fill() only so it is easy to port between versions. */
-    public static void drawPanel(GuiGraphics g, Font f, int x, int y, float scale) {
+    public static void drawPanel(GuiGraphicsExtractor g, Font f, int x, int y, float scale) {
         Theme t = Theme.current();
         Config c = Config.I;
         var pose = g.pose();
@@ -35,32 +35,32 @@ public class BalanceHud {
         g.fill(0, 0, W, 2, t.accent());                    // accent bar
         g.fill(0, h - 1, W, h, t.bg());
 
-        g.drawString(f, c.title, 6, 6, t.accent(), false);
+        g.text(f, c.title, 6, 6, t.accent(), false);
         String win = Config.WINDOW_NAMES[c.graphWindow];
-        g.drawString(f, win, W - 6 - f.width(win), 6, t.dim(), false);
+        g.text(f, win, W - 6 - f.width(win), 6, t.dim(), false);
 
         String bal = BalanceTracker.current < 0 ? "--" : "$" + Money.fmt(BalanceTracker.current);
-        g.drawString(f, bal, 6, 18, t.text(), false);
+        g.text(f, bal, 6, 18, t.text(), false);
 
         double d = BalanceTracker.delta();
         int dc = d >= 0 ? t.up() : t.down();
         String ds = BalanceTracker.start < 0 ? "" : Money.fmtSigned(d);
-        g.drawString(f, ds, W - 6 - f.width(ds), 18, dc, false);
+        g.text(f, ds, W - 6 - f.width(ds), 18, dc, false);
 
         if (c.showRate) {
             String r = BalanceTracker.start < 0 ? "" : Money.fmtSigned(BalanceTracker.perHour()) + "/h";
-            g.drawString(f, r, 6, 30, t.dim(), false);
+            g.text(f, r, 6, 30, t.dim(), false);
         }
 
         if (c.showGraph) drawGraph(g, f, 6, 44, W - 12, 52, t);
         pose.popMatrix();
     }
 
-    private static void drawGraph(GuiGraphics g, Font f, int x, int y, int w, int h, Theme t) {
+    private static void drawGraph(GuiGraphicsExtractor g, Font f, int x, int y, int w, int h, Theme t) {
         g.fill(x, y, x + w, y + h, t.bg());
         List<double[]> pts = BalanceTracker.POINTS;
         if (pts.size() < 2) {
-            g.drawString(f, "collecting data...", x + 6, y + h / 2 - 4, t.dim(), false);
+            g.text(f, "collecting data...", x + 6, y + h / 2 - 4, t.dim(), false);
             return;
         }
         long now = System.currentTimeMillis();
@@ -97,11 +97,11 @@ public class BalanceHud {
             g.fill(x + px, top, x + px + 1, bot, line);
             prevY = py; lastVal = val;
         }
-        g.drawString(f, Money.fmt(max), x + 2, y + 1, t.dim(), false);
-        g.drawString(f, Money.fmt(min), x + 2, y + h - 9, t.dim(), false);
+        g.text(f, Money.fmt(max), x + 2, y + 1, t.dim(), false);
+        g.text(f, Money.fmt(min), x + 2, y + h - 9, t.dim(), false);
     }
 
-    private static void drawPayBanner(GuiGraphics g, Minecraft mc) {
+    private static void drawPayBanner(GuiGraphicsExtractor g, Minecraft mc) {
         long age = System.currentTimeMillis() - PayAlert.shownAt;
         if (PayAlert.shownAt == 0 || age > PayAlert.DURATION) return;
         Theme t = Theme.current();
@@ -119,10 +119,10 @@ public class BalanceHud {
         g.fill(x - 2, y - 2, x + bw + 2, y + bh + 2, glow);
         g.fill(x, y, x + bw, y + bh, t.panel());
         g.fill(x, y, x + 3, y + bh, t.accent());
-        g.drawString(f, "PAYMENT RECEIVED", x + 10, y + 6, t.dim(), false);
+        g.text(f, "PAYMENT RECEIVED", x + 10, y + 6, t.dim(), false);
         String amt = "+$" + Money.fmt(PayAlert.amount);
-        g.drawString(f, amt, x + 10, y + 18, t.up(), false);
+        g.text(f, amt, x + 10, y + 18, t.up(), false);
         String who = "from " + PayAlert.who;
-        g.drawString(f, who, x + bw - 8 - f.width(who), y + 18, t.text(), false);
+        g.text(f, who, x + bw - 8 - f.width(who), y + 18, t.text(), false);
     }
 }

@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public class TenskuClient implements ClientModInitializer {
     public static KeyMapping OPEN_MENU;
@@ -18,15 +17,17 @@ public class TenskuClient implements ClientModInitializer {
     public void onInitializeClient() {
         Config.load();
 
+        KeyMapping.Category category = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath("tenskuclient", "main"));
         OPEN_MENU = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tenskuclient.menu", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KeyMapping.Category.MISC));
+            "key.tenskuclient.menu", InputConstants.KEY_RSHIFT, category));
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.CHAT,
             Identifier.fromNamespaceAndPath("tenskuclient", "balance_hud"),
             (graphics, tickCounter) -> BalanceHud.render(graphics));
 
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
-            while (OPEN_MENU.consumeClick()) mc.setScreen(new MenuScreen());
+            while (OPEN_MENU.consumeClick()) mc.gui.setScreen(new MenuScreen());
             BalanceTracker.tick(mc);
         });
 
